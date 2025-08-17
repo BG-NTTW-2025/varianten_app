@@ -16,10 +16,36 @@ body.locked {
   background: #ff0000; /* rood als locked */
 }
 
-.option { display: inline-block; margin: 1px; cursor: pointer; }
+/* --- OPTIEKNOPPEN --- */
+.option { 
+  /* display: inline-block;  naast elkaar weergeven */
+  display: inline-center; /* in het midden weergeven */
+  margin: 1px;           /* ruimte tussen knoppen */
+  cursor: pointer;       /* cursor verandert in handje */
+}
+.option { display: inline-center; margin: 1px; cursor: pointer; }
 .option img { width: 300px; height: 40px; transition: opacity 0.05s; }
 .locked img { cursor: not-allowed; }
 #lockButton img { width: 200px; height: 30px; cursor: pointer; }
+
+  .input-row {
+  /*  display: flex;               Zorgt dat alles op één lijn staat */
+    display: inline-center; /* in het midden weergeven */
+    align-items: center;        /* Verticale uitlijning midden */
+    gap: 10px;                  /* Ruimte tussen elementen */
+    margin: 20px;               /* Afstand rondom de rij */
+    font-family: Arial, sans-serif;
+	font-size: 16pt;
+  }
+
+  .input-row input[type="number"] {
+    width: 60px;                /* Breedte van de inputbox */
+    padding: 2px;               /* Binnenruimte */
+    border: 2px solid #000;     /* Zwarte lijn rond de box */
+    border-radius: 4px;         /* Licht afgeronde hoeken */
+    text-align: center;          /* Getal in het midden */
+		font-size: 14pt;
+  }
 
 /* help styles (momenteel niet actief)
 #helpText { display: none; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 20px; background-color: #f9f9f9; text-align: left; }
@@ -32,15 +58,26 @@ body.locked {
 <h2>NTTW Spelvarianten</h2>
 <!-- <p>Klik optie aan of uit.</p> -->
 
+<!-- Opties / knoppen -->
 <div id="options">
-  <div class="option" data-id="gele_steen_uit"><img src="gele_steen_uit.png" alt="Gele steen uit"></div><br>
-  <div class="option" data-id="gele_steen_exact"><img src="gele_steen_exact.png" alt="Gele steen exact"></div><br>
-  <div class="option" data-id="gele_steen_maximaal"><img src="gele_steen_maximaal.png" alt="Gele steen maximaal"></div><br>
-  <div class="option" data-id="d4_steen_alternatief"><img src="d4_steen_alternatief.png" alt="d4_steen_alternatief"></div><br>
-    <div class="option" data-id="skip_over"><img src="skip_over.png" alt="skip_over"></div><br>
-  <div class="option" data-id="natuurramp_aan"><img src="natuurramp_aan.png" alt="Natuurramp"></div><br>
-  <div class="option" data-id="hrvds_aan"><img src="hrvds_aan.png" alt="HRvdS"></div><br>
+  <!-- Gele stenen en D4 alternatieven -->
+  <div class="option" data-id="gele_steen_uit"><img src="gele_steen_uit.png" alt="Gele steen uit"></div>
+  <div class="option" data-id="gele_steen_exact"><img src="gele_steen_exact.png" alt="Gele steen exact"></div>
+  <div class="option" data-id="gele_steen_maximaal"><img src="gele_steen_maximaal.png" alt="Gele steen maximaal"></div>
+  <div class="option" data-id="d4_steen_alternatief"><img src="d4_steen_alternatief.png" alt="d4_steen_alternatief"></div>
+
+  <!-- Overige opties -->
+  <div class="option" data-id="skip_over"><img src="skip_over.png" alt="skip_over"></div>
+  <div class="option" data-id="natuurramp_aan"><img src="natuurramp_aan.png" alt="Natuurramp"></div>
+  <div class="option" data-id="hrvds_aan"><img src="hrvds_aan.png" alt="HRvdS"></div>
   <div class="option" data-id="d4app_aan"><img src="d4app_aan.png" alt="D4 App"></div>
+</div>
+
+<div class="input-row">
+  <span>Start</span>
+  <input type="number" min="0" max="399" value="0">
+  <input type="number" min="0" max="399" value="398">
+  <span>Finish</span>
 </div>
 
 <div id="lockButton" style="margin-top:20px;">
@@ -70,6 +107,10 @@ function toggleLock() {
   } else {
     lockTimeEl.textContent = "";
   }
+  
+  // 👉 inputvelden ook locken/unlocken
+  const inputs = document.querySelectorAll(".input-row input[type='number']");
+  inputs.forEach(inp => inp.disabled = locked);
 }
 
 function toggleHelp() {
