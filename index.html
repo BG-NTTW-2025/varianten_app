@@ -32,7 +32,7 @@ body.locked {
   /*  display: flex;               Zorgt dat alles op één lijn staat */
     display: inline-center; /* in het midden weergeven */
     align-items: center;        /* Verticale uitlijning midden */
-    gap: 10px;                  /* Ruimte tussen elementen */
+    gap: 200px;                  /* Ruimte tussen elementen */
     margin: 20px;               /* Afstand rondom de rij */
     font-family: Arial, sans-serif;
 	font-size: 16pt;
@@ -47,10 +47,35 @@ body.locked {
 		font-size: 14pt;
   }
 
-/* help styles (momenteel niet actief)
-#helpText { display: none; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 20px; background-color: #f9f9f9; text-align: left; }
-#helpButton { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
-*/
+ help styles (momenteel niet actief)
+<!-- #helpText { display: none; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 20px; background-color: #f9f9f9; text-align: left; }
+-->
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 2px;
+  text-align: center;
+  background: #AAAAf7; /* standaard paars */
+  transition: background-color 1s ease; /* vloeiende overgang */
+}
+
+body.locked {
+  background: #ff0000; /* rood als locked */
+}
+
+#helpText {
+  display: none;              /* echt verborgen bij starten */
+  width: 300px;
+  margin: 20px auto;
+  background: #f9f9f9;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: left;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -85,9 +110,9 @@ body.locked {
   <!-- <p>Klik om instellingen te locken/ontgrendelen</p> -->
   <p id="lockTime"></p> <!-- hier verschijnt de lock-tijd -->
 </div>
-
-<img id="helpButton" src="help.png" alt="Help" onclick="toggleHelp()">
 <div id="helpText">Plaats hier de help tekst</div>
+<img id="helpButton" src="help.png" alt="Help" onclick="toggleHelp()">
+
 <script>
 let locked = false;
 
@@ -108,98 +133,81 @@ function toggleLock() {
     lockTimeEl.textContent = "";
   }
   
-  // 👉 inputvelden ook locken/unlocken
   const inputs = document.querySelectorAll(".input-row input[type='number']");
   inputs.forEach(inp => inp.disabled = locked);
 }
 
 function toggleHelp() {
   const helpDiv = document.getElementById('helpText');
-  helpDiv.style.display = helpDiv.style.display === 'none' ? 'block' : 'none';
+  helpDiv.style.display = (helpDiv.style.display === 'block') ? 'none' : 'block';
 }
+
+// Maak help klikbaar om te sluiten
+document.getElementById('helpText').addEventListener('click', toggleHelp);
+
+// --- Knop logica ---
 
 const mainId = "gele_steen_uit";
 const subIds = ["gele_steen_exact", "gele_steen_maximaal", "d4_steen_alternatief"];
 const allIds = [mainId, ...subIds];
+const group2Ids = ["skip_over","natuurramp_aan","hrvds_aan","d4app_aan"];
 
-function elById(id) {
-  return document.querySelector(`.option[data-id="${id}"]`);
-}
-function isHalf(el) {
-  return el.classList.contains('active'); // active = 0.5
-}
+function elById(id) { return document.querySelector(`.option[data-id="${id}"]`); }
+function isHalf(el) { return el.classList.contains('active'); }
 function setHalf(el, half) {
   el.classList.toggle('active', half);
   el.querySelector('img').style.opacity = half ? '0.5' : '1';
 }
 
-// --- STARTWAARDEN instellen ---
-setHalf(elById(mainId), false);            // knop1 = 1.0
-setHalf(elById("gele_steen_exact"), true);   // knop2 = 0.5
-setHalf(elById("gele_steen_maximaal"), false); // knop3 = 1.0
-setHalf(elById("d4_steen_alternatief"), false); // knop4 = 1.0
+// --- STARTWAARDEN ---
+setHalf(elById(mainId), false);
+setHalf(elById("gele_steen_exact"), true);
+setHalf(elById("gele_steen_maximaal"), false);
+setHalf(elById("d4_steen_alternatief"), false);
 
 document.querySelectorAll('.option').forEach(option => {
   option.addEventListener('click', () => {
     if (locked) return;
-
     const id = option.dataset.id;
 
-    // Controleer eerst of knop1 op 0.5 staat, reset naar startwaarden
-    if (isHalf(elById(mainId))) {
-      setHalf(elById(mainId), false);            // knop1 = 1.0
-      setHalf(elById("gele_steen_exact"), true);   // knop2 = 0.5
-      setHalf(elById("gele_steen_maximaal"), false); // knop3 = 1.0
-      setHalf(elById("d4_steen_alternatief"), false); // knop4 = 1.0
-      return; // stop verdere actie
-    }
-
-    if (id === mainId) {
-      const willBeHalf = !isHalf(option);
-      if (willBeHalf) {
-        // 1 → 0.5  ⇒ alles 0.5
-        allIds.forEach(sid => setHalf(elById(sid), true));
-      } else {
-        // 1 → 1.0  ⇒ 2,3,4 → exclusiviteit behouden
+    // --- Groep 1 logica ---
+    if (allIds.includes(id)) {
+      // reset alleen groep 1 bij specifieke condities
+      if (isHalf(elById(mainId))) {
         setHalf(elById(mainId), false);
         setHalf(elById("gele_steen_exact"), true);
         setHalf(elById("gele_steen_maximaal"), false);
         setHalf(elById("d4_steen_alternatief"), false);
+        return;
       }
-    }
-    else if (id === "gele_steen_exact") {
-      const wasHalf = isHalf(option);
-      if (wasHalf) {
-        setHalf(elById(mainId), false); // knop1 = 1.0
-        setHalf(elById("gele_steen_exact"), false);
-        setHalf(elById("gele_steen_maximaal"), true);
-      } else {
+
+      if (id === mainId) {
+        const willBeHalf = !isHalf(option);
+        if (willBeHalf) allIds.forEach(sid => setHalf(elById(sid), true));
+        else {
+          setHalf(elById(mainId), false);
+          setHalf(elById("gele_steen_exact"), true);
+          setHalf(elById("gele_steen_maximaal"), false);
+          setHalf(elById("d4_steen_alternatief"), false);
+        }
+      } else if (id === "gele_steen_exact") {
+        const wasHalf = isHalf(option);
         setHalf(elById(mainId), false);
-        setHalf(elById("gele_steen_exact"), true);
-        setHalf(elById("gele_steen_maximaal"), false);
-      }
-    }
-    else if (id === "gele_steen_maximaal") {
-      const wasHalf = isHalf(option);
-      if (wasHalf) {
-        setHalf(elById(mainId), false); // knop1 = 1.0
-        setHalf(elById("gele_steen_maximaal"), false);
-        setHalf(elById("gele_steen_exact"), true);
-      } else {
+        setHalf(elById("gele_steen_exact"), !wasHalf);
+        setHalf(elById("gele_steen_maximaal"), wasHalf);
+      } else if (id === "gele_steen_maximaal") {
+        const wasHalf = isHalf(option);
         setHalf(elById(mainId), false);
-        setHalf(elById("gele_steen_maximaal"), true);
-        setHalf(elById("gele_steen_exact"), false);
+        setHalf(elById("gele_steen_maximaal"), !wasHalf);
+        setHalf(elById("gele_steen_exact"), wasHalf);
+      } else if (id === "d4_steen_alternatief") {
+        setHalf(option, !isHalf(option));
       }
-    }
-    else if (id === "d4_steen_alternatief") {
-      const wasHalf = isHalf(option);
-      setHalf(option, !wasHalf); // toggle zichzelf
-    }
-    else {
-      // overige opties blijven individueel togglebaar
-      option.classList.toggle('active');
-      const img = option.querySelector('img');
-      img.style.opacity = option.classList.contains('active') ? '0.5' : '1';
+    } 
+    // --- Groep 2 logica ---
+    else if (group2Ids.includes(id)) {
+      const wasActive = isHalf(option);
+      setHalf(option, !wasActive); // toggle
     }
   });
 });
