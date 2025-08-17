@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NTTW Spelvarianten App Prototype</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 2px;
+  text-align: center;
+  background: #AAAAf7; /* standaard paars */
+}
+
+body.locked {
+  background: #ff0000; /* rood als locked */
+}
+
+.option { display: inline-block; margin: 1px; cursor: pointer; }
+.option img { width: 300px; height: 30px; transition: opacity 0.05s; }
+.locked img { cursor: not-allowed; }
+#lockButton img { width: 200px; height: 30px; cursor: pointer; }
+
+/* help styles (momenteel niet actief)
+#helpText { display: none; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-top: 20px; background-color: #f9f9f9; text-align: left; }
+#helpButton { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+*/
+</style>
+</head>
+<body>
+
+<h2>NTTW Spelvarianten</h2>
+<!-- <p>Klik optie aan of uit.</p> -->
+
+<div id="options">
+  <div class="option" data-id="gele_steen_uit"><img src="gele_steen_uit.png" alt="Gele steen uit"></div>
+  <div class="option" data-id="gele_steen_exact"><img src="gele_steen_exact.png" alt="Gele steen exact"></div>
+  <div class="option" data-id="gele_steen_maximaal"><img src="gele_steen_maximaal.png" alt="Gele steen maximaal"></div>
+  <div class="option" data-id="d4_steen_alternatief"><img src="d4_steen_alternatief.png" alt="d4_steen_alternatief"></div>
+    <div class="option" data-id="skip_over"><img src="skip_over.png" alt="skip_over"></div>
+  <div class="option" data-id="natuurramp_aan"><img src="natuurramp_aan.png" alt="Natuurramp"></div>
+  <div class="option" data-id="hrvds_aan"><img src="hrvds_aan.png" alt="HRvdS"></div>
+  <div class="option" data-id="d4app_aan"><img src="d4app_aan.png" alt="D4 App"></div>
+</div>
+
+<div id="lockButton" style="margin-top:20px;">
+  <img src="lock_off.png" alt="Unlock" onclick="toggleLock()">
+  <!-- <p>Klik om instellingen te locken/ontgrendelen</p> -->
+  <p id="lockTime"></p> <!-- hier verschijnt de lock-tijd -->
+</div>
+
+<img id="helpButton" src="help.png" alt="Help" onclick="toggleHelp()">
+<div id="helpText">Plaats hier de help tekst</div>
+<script>
+let locked = false;
+
+function toggleLock() {
+  locked = !locked;
+  const lockImg = document.querySelector('#lockButton img');
+  lockImg.src = locked ? 'lock_on.png' : 'lock_off.png';
+  lockImg.alt = locked ? 'Locked' : 'lock_on.png';
+  document.body.classList.toggle('locked', locked);
+
+  const lockTimeEl = document.getElementById("lockTime");
+  if (locked) {
+    const now = new Date();
+    const datum = now.toLocaleDateString("nl-NL");
+    const tijd  = now.toLocaleTimeString("nl-NL", {hour: "2-digit", minute:"2-digit"});
+    lockTimeEl.textContent = `Locked: ${datum} ${tijd}`;
+  } else {
+    lockTimeEl.textContent = "";
+  }
+}
+
+function toggleHelp() {
+  const helpDiv = document.getElementById('helpText');
+  helpDiv.style.display = helpDiv.style.display === 'none' ? 'block' : 'none';
+}
+
+const mainId = "gele_steen_uit";
+const subIds = ["gele_steen_exact", "gele_steen_maximaal", "d4_steen_alternatief"];
+const allIds = [mainId, ...subIds];
+
+function elById(id) {
+  return document.querySelector(`.option[data-id="${id}"]`);
+}
+function isHalf(el) {
+  return el.classList.contains('active'); // active = 0.5
+}
+function setHalf(el, half) {
+  el.classList.toggle('active', half);
+  el.querySelector('img').style.opacity = half ? '0.5' : '1';
+}
+
+// --- STARTWAARDEN instellen ---
+setHalf(elById(mainId), false);            // knop1 = 1.0
+setHalf(elById("gele_steen_exact"), true);   // knop2 = 0.5
+setHalf(elById("gele_steen_maximaal"), false); // knop3 = 1.0
+setHalf(elById("d4_steen_alternatief"), false); // knop4 = 1.0
+
+document.querySelectorAll('.option').forEach(option => {
+  option.addEventListener('click', () => {
+    if (locked) return;
+
+    const id = option.dataset.id;
+
+    // Controleer eerst of knop1 op 0.5 staat, reset naar startwaarden
+    if (isHalf(elById(mainId))) {
+      setHalf(elById(mainId), false);            // knop1 = 1.0
+      setHalf(elById("gele_steen_exact"), true);   // knop2 = 0.5
+      setHalf(elById("gele_steen_maximaal"), false); // knop3 = 1.0
+      setHalf(elById("d4_steen_alternatief"), false); // knop4 = 1.0
+      return; // stop verdere actie
+    }
+
+    if (id === mainId) {
+      const willBeHalf = !isHalf(option);
+      if (willBeHalf) {
+        // 1 → 0.5  ⇒ alles 0.5
+        allIds.forEach(sid => setHalf(elById(sid), true));
+      } else {
+        // 1 → 1.0  ⇒ 2,3,4 → exclusiviteit behouden
+        setHalf(elById(mainId), false);
+        setHalf(elById("gele_steen_exact"), true);
+        setHalf(elById("gele_steen_maximaal"), false);
+        setHalf(elById("d4_steen_alternatief"), false);
+      }
+    }
+    else if (id === "gele_steen_exact") {
+      const wasHalf = isHalf(option);
+      if (wasHalf) {
+        setHalf(elById(mainId), false); // knop1 = 1.0
+        setHalf(elById("gele_steen_exact"), false);
+        setHalf(elById("gele_steen_maximaal"), true);
+      } else {
+        setHalf(elById(mainId), false);
+        setHalf(elById("gele_steen_exact"), true);
+        setHalf(elById("gele_steen_maximaal"), false);
+      }
+    }
+    else if (id === "gele_steen_maximaal") {
+      const wasHalf = isHalf(option);
+      if (wasHalf) {
+        setHalf(elById(mainId), false); // knop1 = 1.0
+        setHalf(elById("gele_steen_maximaal"), false);
+        setHalf(elById("gele_steen_exact"), true);
+      } else {
+        setHalf(elById(mainId), false);
+        setHalf(elById("gele_steen_maximaal"), true);
+        setHalf(elById("gele_steen_exact"), false);
+      }
+    }
+    else if (id === "d4_steen_alternatief") {
+      const wasHalf = isHalf(option);
+      setHalf(option, !wasHalf); // toggle zichzelf
+    }
+    else {
+      // overige opties blijven individueel togglebaar
+      option.classList.toggle('active');
+      const img = option.querySelector('img');
+      img.style.opacity = option.classList.contains('active') ? '0.5' : '1';
+    }
+  });
+});
+</script>
