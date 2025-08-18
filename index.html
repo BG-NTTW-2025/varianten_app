@@ -85,7 +85,7 @@ body.locked {
 
 <!-- Opties / knoppen -->
 <div id="options">
-  <!-- Gele stenen en D4 alternatieven -->
+  <!-- Gele stenen en D6 alternatieven -->
   <div class="option" data-id="gele_steen_uit"><img src="gele_steen_uit.png" alt="Gele steen uit"></div>
   <div class="option" data-id="gele_steen_exact"><img src="gele_steen_exact.png" alt="Gele steen exact"></div>
   <div class="option" data-id="gele_steen_maximaal"><img src="gele_steen_maximaal.png" alt="Gele steen maximaal"></div>
@@ -96,6 +96,9 @@ body.locked {
   <div class="option" data-id="natuurramp_aan"><img src="natuurramp_aan.png" alt="Natuurramp"></div>
   <div class="option" data-id="hrvds_aan"><img src="hrvds_aan.png" alt="HRvdS"></div>
   <div class="option" data-id="d4app_aan"><img src="d4app_aan.png" alt="D4 App"></div>
+  <div class="option" data-id="winnaar_locatienummer_aan"><img src="winnaar_locatienummer.png" alt="winnaar_locatienummer"></div>
+  <div class="option" data-id="winnaar_gele_steen_aan"><img src="winnaar_gele_steen.png" alt="winnaar_gele_steen"></div>
+  
 </div>
 
 <div class="input-row">
@@ -111,11 +114,33 @@ body.locked {
   <p id="lockTime"></p> <!-- hier verschijnt de lock-tijd -->
 </div>
 <div id="helpText">
-Help tekst App NTTW Spelvarianten.
+<strong>Helptekst App NTTW Spelvarianten</strong><br>
+De app legt alle afspraken vast, zodat er geen misverstand bestaat over de te volgen spelregels.<br>
 <br>
-De app legt de afspraken vast zodat er geen misverstand bestaat over de te volgen spelregels.<br>
-Indien de “Gele Steen voor stappen” gekozen is, betekend het dat de D4 hondertal dobbelsteen gebruikt wordt voor het aantal stappen dat een pion verplaatst mag worden na het onder water zetten van een locatie.<br>
-Is de optie “Gele Steen Exact aantal stappen” gekozen, dan moet de speler het exacte aantal stappen met een pion kunnen zetten. Is dat niet mogelijk dan vervalt de beurt.<br>Is de optie “Gele Steen Maximaal aantal stappen” gekozen dan mag de pion ook minder stappen verzet worden dan het gedobbelde aantal.<br>Is de optie “D6 Steen indien gele steen 0” gekozen dan mag de D6 steen geworpen worden als de uitkomst van de gele D4 steen 0 is.<br>Is de optie “Skip over pionnen toegestaan” gekozen, dan mag men over een andere pion heen als er meer dan 1 stap gezet mag worden. Anders is het niet toegstaan tijdens het verplaatsen een cel te gebruiken die door een andere pion bezet is.<br>Is de optie “Natuurrampen actief” dan zijn de 4 Natuurrampkaarten in het spel opgenomen.<br>Is de optie “Conflicten actief” gekozen, dan zijn de3 x 4 conflictkaarten oftewel HRvdS (Het Recht van de Sterkste) kaarten in het spel opgenomen.<br>Is de optie “D4 simulatie app toegestaan” gekozen dan is het spelers toegstaan de D4 app te gebruiken.<br>Is een spelvariant samengesteld en zijn alle spelers geïnformeerd, dan kan de instelling vergrendeld worden.<br>Is een optie niet gekozen dan gelden de basis spelregels van NTTW.<br>Zie hiervoor het PDF document. 
+<strong>Gele Steen voor stappen</strong> – <br>de gele D4 (honderdtal) steen bepaalt hoeveel stappen een pion gezet mag worden na het onder water zetten van een locatie.<br>
+<br>
+<strong>Gele Steen exact aantal stappen</strong> – <br>de speler moet exact het aantal gedobbelde stappen kunnen zetten. Als dit niet mogelijk is, vervalt de beurt.<br>
+<br>
+<strong>Gele Steen maximaal aantal stappen</strong> – <br>de speler mag ook minder stappen zetten dan het gedobbelde aantal.<br>
+<br>
+<strong>D6 Steen indien gele steen 0</strong> – <br>als de uitkomst van de gele D4 steen 0 is, mag de speler een D6 steen werpen.<br>
+<br>
+<strong>Skip over pionnen toegestaan</strong> – <br>als er meer dan één stap gezet mag worden, mag de pion over een andere pion heen bewegen. Standaard is dit niet toegestaan.<br>
+<br>
+<strong>Natuurrampen actief</strong> – <br>de 4 natuurrampkaarten worden in het spel opgenomen.<br>
+<br>
+<strong>Conflicten actief</strong> – <br>de 3 × 4 conflictkaarten, oftewel HRvdS-kaarten (Het recht van de sterkste), worden in het spel opgenomen.<br>
+<br>
+<strong>D4 simulatie app toegestaan</strong> – <br>spelers mogen de D4-simulatie-app gebruiken.<br>
+<br>
+<strong>Hoogste locatienummer bepaalt winnaar </strong> – <br>bij een gelijkspel wint de speler wiens pion het hoogste locatienummer heeft.<br>
+<br>
+<strong>Gele steen bepaalt winnaar  </strong> – <br>bij een gelijkspel beslist de uitkomst van de gele steen wie wint.<br>
+<br>
+<strong>Basisregels</strong> – <br>als een optie niet gekozen is, gelden de basisregels van NTTW. Zie hiervoor de handleiding.<br>
+<br>
+<strong>Instellingen vergrendelen</strong> – <br>zodra een spelvariant is samengesteld en alle spelers geïnformeerd zijn, kan de instelling worden vergrendeld.<br>
+<br>
 
 </div>
 <img id="helpButton" src="help.png" alt="Help" onclick="toggleHelp()">
@@ -155,9 +180,9 @@ document.getElementById('helpText').addEventListener('click', toggleHelp);
 // --- Knop logica ---
 
 const mainId = "gele_steen_uit";
-const subIds = ["gele_steen_exact", "gele_steen_maximaal", "d4_steen_alternatief"];
+const subIds = ["gele_steen_exact", "gele_steen_maximaal", "d6_steen_alternatief"];
 const allIds = [mainId, ...subIds];
-const group2Ids = ["skip_over","natuurramp_aan","hrvds_aan","d4app_aan"];
+const group2Ids = ["skip_over","natuurramp_aan","hrvds_aan","d4app_aan","winnaar_locatienummer_aan","winnaar_gele_steen_aan"];
 
 function elById(id) { return document.querySelector(`.option[data-id="${id}"]`); }
 function isHalf(el) { return el.classList.contains('active'); }
@@ -170,7 +195,7 @@ function setHalf(el, half) {
 setHalf(elById(mainId), false);
 setHalf(elById("gele_steen_exact"), true);
 setHalf(elById("gele_steen_maximaal"), false);
-setHalf(elById("d4_steen_alternatief"), false);
+setHalf(elById("d6_steen_alternatief"), false);
 
 document.querySelectorAll('.option').forEach(option => {
   option.addEventListener('click', () => {
@@ -184,7 +209,7 @@ document.querySelectorAll('.option').forEach(option => {
         setHalf(elById(mainId), false);
         setHalf(elById("gele_steen_exact"), true);
         setHalf(elById("gele_steen_maximaal"), false);
-        setHalf(elById("d4_steen_alternatief"), false);
+        setHalf(elById("d6_steen_alternatief"), false);
         return;
       }
 
@@ -195,7 +220,7 @@ document.querySelectorAll('.option').forEach(option => {
           setHalf(elById(mainId), false);
           setHalf(elById("gele_steen_exact"), true);
           setHalf(elById("gele_steen_maximaal"), false);
-          setHalf(elById("d4_steen_alternatief"), false);
+          setHalf(elById("d6_steen_alternatief"), false);
         }
       } else if (id === "gele_steen_exact") {
         const wasHalf = isHalf(option);
@@ -207,7 +232,7 @@ document.querySelectorAll('.option').forEach(option => {
         setHalf(elById(mainId), false);
         setHalf(elById("gele_steen_maximaal"), !wasHalf);
         setHalf(elById("gele_steen_exact"), wasHalf);
-      } else if (id === "d4_steen_alternatief") {
+      } else if (id === "d6_steen_alternatief") {
         setHalf(option, !isHalf(option));
       }
     } 
